@@ -1,0 +1,12 @@
+/* Using this dataset, show the SQL query that provides January 31's rolling 3 day average of total transaction amount processed per day */
+
+SELECT 
+    date,
+    AVG(transaction_amount) OVER w AS moving_avg_3day
+FROM (SELECT
+	DATE(STR_TO_DATE(transaction_time, '%Y-%m-%d %T')) AS date,
+    SUM(transaction_amount) AS transaction_amount
+    FROM transactions
+    GROUP BY date) transaction_per_date
+WINDOW w AS (ORDER BY date ASC RANGE INTERVAL 3 DAY PRECEDING)    
+ORDER BY date ASC;
